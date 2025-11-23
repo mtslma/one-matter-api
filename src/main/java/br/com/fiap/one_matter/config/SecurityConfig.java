@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity; // 💡 IMPORTANTE
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity(prePostEnabled = true) // 💡 HABILITA O @PreAuthorize NOS CONTROLLERS
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -38,11 +38,14 @@ public class SecurityConfig {
                                 "/auth/refresh"
                         ).permitAll()
 
-                        // Rotas públicas de GET (Listar/Ver Vagas)
+                        // Rotas públicas de GET (Vagas e SKILLS)
+                        // ADICIONADO: Permite listar skills sem login para o cadastro
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/vagas",
-                                "/vagas/{id:[0-9]+}" // Permite GET por ID
+                                "/vagas/**",
+                                "/skills",
+                                "/skills/**"
                         ).permitAll()
 
                         // Rotas autenticadas para usuários (Candidatos)
@@ -56,9 +59,11 @@ public class SecurityConfig {
 
                         // Novas rotas de ADMIN (Gerenciamento)
                         .requestMatchers("/admin/users/**").hasRole("ADMIN")
+                        // As skills para escrita (POST/PUT/DELETE) continuam protegidas pelo Controller ou pela regra abaixo se não for GET
                         .requestMatchers("/vagas/**").hasRole("ADMIN")
                         .requestMatchers("/empresas/**").hasRole("ADMIN")
                         .requestMatchers("/recrutadores/**").hasRole("ADMIN")
+                        // Note: O GET /skills foi liberado acima, então essa regra só pega o que sobrou (POST, PUT, DELETE)
                         .requestMatchers("/skills/**").hasRole("ADMIN")
                         .requestMatchers("/questoes/**").hasRole("ADMIN")
 

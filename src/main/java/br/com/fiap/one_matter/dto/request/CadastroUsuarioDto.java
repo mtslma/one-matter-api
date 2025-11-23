@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
+import java.util.List;
 
 public record CadastroUsuarioDto(
         @NotBlank(message = "O nome não pode ser vazio.")
@@ -32,5 +33,8 @@ public record CadastroUsuarioDto(
         Genero genero,
 
         @Size(max = 13, message = "O telefone deve ter no máximo 13 caracteres.")
-        String telefone
+        String telefone,
+
+        // Novo campo: Lista de IDs das skills selecionadas
+        List<Long> skills
 ) {}

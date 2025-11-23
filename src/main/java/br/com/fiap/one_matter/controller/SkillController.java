@@ -20,7 +20,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/skills")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
+// REMOVIDO: @PreAuthorize("hasRole('ADMIN')") da classe para liberar o GET
 public class SkillController {
 
     private final SkillService skillService;
@@ -40,13 +40,16 @@ public class SkillController {
         return ResponseEntity.ok(SkillResponseDto.fromSkill(s));
     }
 
+    // Métodos de escrita continuam restritos ao ADMIN
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SkillResponseDto> criarSkill(@RequestBody @Valid SkillRequestDto dto) {
         Skill s = skillService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(SkillResponseDto.fromSkill(s));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SkillResponseDto> atualizarSkill(
             @PathVariable Long id,
             @RequestBody @Valid SkillRequestDto dto) {
@@ -55,12 +58,14 @@ public class SkillController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletarSkill(@PathVariable Long id) {
         skillService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/associar-vaga")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> associarSkillVaga(@RequestBody @Valid AssociacaoRequestDto dto) {
         skillService.associarVaga(dto.idPrincipal(), dto.idAssociado());
         return ResponseEntity.ok("Skill " + dto.idPrincipal() + " associada à Vaga " + dto.idAssociado());
