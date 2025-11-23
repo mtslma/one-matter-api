@@ -100,8 +100,11 @@ public class UsuarioService {
         }
     }
 
-    // Método auxiliar para salvar as skills
-    private void associarSkills(Usuario usuario, List<Long> skillIds) {
+    /**
+     * Associa uma lista de Skills a um usuário.
+     */
+    @Transactional
+    public void associarSkills(Usuario usuario, List<Long> skillIds) {
         List<Skill> skillsEncontradas = skillRepository.findAllById(skillIds);
 
         for (Skill skill : skillsEncontradas) {
@@ -117,5 +120,13 @@ public class UsuarioService {
 
             usuarioSkillRepository.save(usuarioSkill);
         }
+    }
+
+    /**
+     * NOVO MÉTODO: Remove todas as skills de um usuário.
+     */
+    @Transactional
+    public void removerSkills(Usuario usuario) {
+        usuarioSkillRepository.deleteAllByCandidato(usuario);
     }
 }

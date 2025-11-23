@@ -20,7 +20,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/skills")
 @RequiredArgsConstructor
-// REMOVIDO: @PreAuthorize("hasRole('ADMIN')") da classe para liberar o GET
 public class SkillController {
 
     private final SkillService skillService;

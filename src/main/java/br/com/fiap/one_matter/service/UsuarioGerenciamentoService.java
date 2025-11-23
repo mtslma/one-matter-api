@@ -17,6 +17,7 @@ import java.util.Optional;
 public class UsuarioGerenciamentoService {
 
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
     public Usuario buscarPorEmail(String email) {
         return usuarioRepository.findByEmail(email)
@@ -40,6 +41,7 @@ public class UsuarioGerenciamentoService {
     public Usuario atualizar(String email, AtualizarUsuarioDto dto) {
         Usuario usuario = buscarPorEmail(email);
 
+        // 1. Atualiza os dados básicos do usuário
         if (dto.nome() != null && !dto.nome().isBlank()) {
             usuario.setNome(dto.nome());
         }
@@ -56,7 +58,19 @@ public class UsuarioGerenciamentoService {
             usuario.setTelefone(dto.telefone());
         }
 
-        return usuario;
+        // 2. Lógica de atualização de Skills
+        if (dto.skills() != null) {
+            // Remove todas as skills existentes do usuário
+            usuarioService.removerSkills(usuario);
+
+            // Se a lista de skills fornecida não for vazia, associa as novas
+            if (!dto.skills().isEmpty()) {
+                usuarioService.associarSkills(usuario, dto.skills());
+            }
+        }
+
+        // 3. Salva e retorna o usuário atualizado
+        return usuarioRepository.save(usuario);
     }
 
     @Transactional
